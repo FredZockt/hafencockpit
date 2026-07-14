@@ -1,0 +1,103 @@
+<section class="cockpit">
+  <header class="cockpit__header">
+    <div>
+      <h1 class="cockpit__title">Hafen-Cockpit</h1>
+      <p class="cockpit__subtitle">
+        Hafenleitstelle Hamburg &middot; Live-Daten von PEGELONLINE (WSV) und Bright Sky (DWD)
+      </p>
+    </div>
+
+    <div class="cockpit__actions">
+      <!-- Die Auswahl kommt vollständig aus der Registry: Ein neues Widget taucht
+           hier automatisch auf, ohne Änderung an dieser Datei. -->
+      @if (availableTypes().length > 0) {
+        <div class="cockpit__add">
+          <span class="cockpit__add-label">Widget hinzufügen:</span>
+          @for (type of availableTypes(); track type) {
+            <button
+              type="button"
+              class="cockpit__button"
+              [title]="registry[type].description"
+              (click)="addWidget(type)"
+            >
+              + {{ registry[type].title }}
+            </button>
+          }
+        </div>
+      }
+
+      <div class="cockpit__reset">
+        <button
+          type="button"
+          class="cockpit__button cockpit__button--ghost"
+          (click)="resetLayout()"
+        >
+          Layout zurücksetzen
+        </button>
+
+        @if (countdown(); as remaining) {
+          <!-- EIN Zähler für ALLE Kacheln, weil alle im selben Moment aktualisieren.
+               aria-live="off": Der Zähler ändert sich jede Sekunde - vorgelesen wäre
+               die Seite unbenutzbar. -->
+          <p class="cockpit__countdown" aria-live="off">
+            <span
+              class="cockpit__countdown-dot"
+              [class.cockpit__countdown-dot--active]="isRefreshing()"
+              aria-hidden="true"
+            ></span>
+
+            @if (isRefreshing()) {
+              <span class="cockpit__countdown-running">Alle Widgets werden aktualisiert ...</span>
+            } @else {
+              Nächste Aktualisierung aller Widgets in
+              <strong class="cockpit__countdown-value">{{ remaining }}</strong>
+            }
+          </p>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- cdkDropListOrientation="mixed": Die Werte 'vertical'/'horizontal' setzen eine
+       einspaltige bzw. einzeilige Liste voraus. Unser Grid bricht in mehrere Zeilen um -
+       nur 'mixed' berechnet die Einfügeposition zweidimensional, sodass der Platzhalter
+       dort landet, wo der Nutzer die Kachel wirklich hinzieht. -->
+  @if (isEmpty()) {
+    <p class="cockpit__empty">
+      Das Cockpit ist leer. Fügen Sie oben ein Widget hinzu oder setzen Sie das Layout zurück.
+    </p>
+  } @else {
+    <div
+      class="cockpit__grid"
+      cdkDropList
+      cdkDropListOrientation="mixed"
+      [cdkDropListData]="widgets()"
+      (cdkDropListDropped)="drop($event)"
+    >
+      @for (widget of widgets(); track widget.id) {
+        <div class="cockpit__cell" cdkDrag>
+          <!-- Zeigt während des Ziehens, wo die Kachel landet. -->
+          <div class="cockpit__placeholder" *cdkDragPlaceholder></div>
+
+          <app-widget-loader [widget]="widget" (remove)="removeWidget($event)" />
+        </div>
+      }
+    </div>
+  }
+
+  <footer class="cockpit__footer">
+    <p>
+      Datenquellen:
+      <a href="https://www.pegelonline.wsv.de/webservice/dokuRestapi" target="_blank" rel="noopener">
+        PEGELONLINE REST-API v2 (WSV)
+      </a>
+      &middot;
+      <a href="https://brightsky.dev/docs/" target="_blank" rel="noopener">
+        Bright Sky (Open Data des DWD)
+      </a>
+    </p>
+    <p class="cockpit__footer-note">
+      Das Layout wird ausschließlich lokal im Browser gespeichert (localStorage).
+    </p>
+  </footer>
+</section>

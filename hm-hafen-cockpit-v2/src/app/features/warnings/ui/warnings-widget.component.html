@@ -1,0 +1,72 @@
+<!-- Daten schlagen alles: Sind welche da, werden sie gezeigt - auch während eines
+     Refreshs und selbst nach einem fehlgeschlagenen Abruf. Nur wer NIE Daten hatte,
+     sieht Fehler oder Spinner. Damit kann die Kachel ihre Höhe nicht verlieren. -->
+<app-widget-frame
+  [title]="definition.title"
+  [dataSource]="definition.dataSource"
+  [loadedAt]="loadedAt()"
+  [status]="status()"
+  [removable]="context !== null"
+  (remove)="context?.remove()"
+>
+  @if (data(); as overview) {
+    @if (overview.warnings.length === 0) {
+      <!-- Der Normalfall. Ruhig, grün, mit Beleg - nicht als Fehler getarnt. -->
+      <app-empty-state icon="✓" text="Keine aktiven Warnungen" [hint]="emptyHint()" />
+    } @else {
+      <ul class="warnings">
+        @for (warning of overview.warnings; track warning.id) {
+          <li class="warning" [class]="'warning--' + severityClass(warning.severity)">
+            <div class="warning__head">
+              <span class="warning__severity">{{ warning.severity }}</span>
+
+              @if (warning.isActive) {
+                <span class="warning__active">laufend</span>
+              } @else {
+                <!-- Angekündigt, aber noch nicht in Kraft - operativ entscheidend. -->
+                <span class="warning__upcoming">angekündigt</span>
+              }
+            </div>
+
+            <h3 class="warning__headline">{{ warning.headline }}</h3>
+
+            <p class="warning__period">
+              {{ warning.startsAt | date: 'dd.MM. HH:mm' }} –
+              @if (warning.endsAt !== null) {
+                {{ warning.endsAt | date: 'dd.MM. HH:mm' }}
+              } @else {
+                <!-- `expires` ist laut CAP-Spec nullable - "offen" statt eines erfundenen Endes. -->
+                <span class="warning__open">offen</span>
+              }
+            </p>
+
+            <p class="warning__description">{{ warning.description }}</p>
+
+            @if (warning.instruction; as instruction) {
+              <p class="warning__instruction">
+                <strong>Empfehlung:</strong>
+                {{ instruction }}
+              </p>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    <p class="warnings__origin">
+      @if (overview.area; as area) {
+        Warnzelle {{ area.name }} &middot; {{ area.state }}
+      } @else {
+        Warnzelle unbekannt
+      }
+      @if (overview.filteredTestCount > 0) {
+        <!-- Testmeldungen werden ausgeblendet, aber nicht verschwiegen. -->
+        &middot; {{ overview.filteredTestCount }} Testmeldung(en) ausgeblendet
+      }
+    </p>
+  } @else if (fatalError(); as error) {
+    <app-error-state [error]="error" />
+  } @else {
+    <app-loading-state text="Warnungen werden geladen ..." />
+  }
+</app-widget-frame>

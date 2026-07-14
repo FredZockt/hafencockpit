@@ -1,0 +1,103 @@
+<!--
+  TIDE-WIDGET - Template. Reihenfolge: Daten schlagen alles.
+    1. Daten da?        -> anzeigen (auch beim Nachladen oder nach Fehlversuch)
+    2. harter Fehler?   -> Fehlermeldung (nur, wenn es NIE Daten gab)
+    3. sonst            -> Spinner (nur beim allerersten Laden)
+  Damit ist ein Content-Jump strukturell ausgeschlossen; Refresh und Fehler
+  äußern sich nur in der Farbe des Status-Markers, nicht im Layout.
+-->
+<app-widget-frame
+  [title]="definition.title"
+  [dataSource]="definition.dataSource"
+  [loadedAt]="loadedAt()"
+  [status]="status()"
+  [removable]="context !== null"
+  (remove)="context?.remove()"
+>
+  @if (data(); as tide) {
+    <div class="tide">
+      <div class="tide__headline">
+        @if (tide.currentWaterLevelCm !== null) {
+          <span class="tide__value">
+            {{ tide.currentWaterLevelCm | number: '1.0-0' }}
+            <span class="tide__unit">{{ tide.unit }}</span>
+          </span>
+        } @else {
+          <!-- null heißt Sensorausfall - NICHT 0 cm. Das muss man sehen. -->
+          <span class="tide__value tide__value--missing" title="Kein Messwert verfügbar">
+            –
+          </span>
+        }
+
+        <span class="tide__trend" [class]="trendClass(tide.trend)" [title]="'Tendenz: ' + tide.trend">
+          {{ trendArrow(tide.trend) }} {{ tide.trend }}
+        </span>
+      </div>
+
+      <!-- Höhenbezug: Der Rohwert oben bezieht sich auf den PEGELNULLPUNKT, nicht
+           auf den Meeresspiegel. Ohne diese Zeile ist die Zahl nicht einzuordnen. -->
+      <p class="tide__reference">
+        über Pegelnull (PNP)
+        @if (tide.waterLevelMeterAboveSeaLevel !== null) {
+          <span class="tide__nhn">
+            = {{ tide.waterLevelMeterAboveSeaLevel | number: '1.2-2' }} m ü. NHN
+          </span>
+        }
+        @if (tide.gaugeZeroMeter !== null) {
+          <span class="tide__gauge-zero">
+            (PNP {{ tide.gaugeZeroMeter | number: '1.3-3' }} m ü. NHN)
+          </span>
+        }
+      </p>
+
+      <div class="tide__badges">
+        <span class="tide__badge" [class]="'tide__badge--' + tide.levelState">
+          Wasserstand: {{ tide.levelState }}
+        </span>
+      </div>
+
+      <!-- rangeMin/rangeMax kommen BEWUSST aus den Rohdaten: Die gezeichnete Kurve
+           ist ausgedünnt, ihre Extremwerte können knapp danebenliegen. So schneidet
+           die Y-Achse keinen Scheitel ab und widerspricht nicht den Kennzahlen. -->
+      <app-line-chart
+        [points]="chartPoints()"
+        [unit]="tide.unit"
+        [rangeMin]="tide.curveMinCm"
+        [rangeMax]="tide.curveMaxCm"
+        [ariaLabel]="'Wasserstandskurve der letzten 24 Stunden am Pegel ' + tide.stationName"
+      />
+
+      <dl class="tide__facts">
+        @if (tide.curveMinCm !== null && tide.curveMaxCm !== null) {
+          <div class="tide__fact">
+            <dt>Niedrigster Stand (24 h)</dt>
+            <dd>{{ tide.curveMinCm | number: '1.0-0' }} {{ tide.unit }}</dd>
+          </div>
+          <div class="tide__fact">
+            <dt>Höchster Stand (24 h)</dt>
+            <dd>{{ tide.curveMaxCm | number: '1.0-0' }} {{ tide.unit }}</dd>
+          </div>
+        }
+        @if (tide.curveRangeCm !== null) {
+          <div class="tide__fact">
+            <!-- Bewusst nicht "Tidenhub": Spanne im 24-h-Fenster, nicht die
+                 amtliche Differenz Thw/Tnw. Siehe tide.model.ts. -->
+            <dt>Spanne im Zeitfenster</dt>
+            <dd>{{ tide.curveRangeCm | number: '1.0-0' }} {{ tide.unit }}</dd>
+          </div>
+        }
+      </dl>
+
+      <!-- Herkunft im Klartext, inklusive der Ausdünnung. Nichts wird stillschweigend weggelassen. -->
+      <p class="tide__origin">
+        {{ tide.stationName }} &middot; {{ tide.waterName }} &middot; Kurve:
+        {{ tide.sampledPointCount }} von {{ tide.rawPointCount }} Messpunkten dargestellt
+      </p>
+    </div>
+  } @else if (fatalError(); as error) {
+    <!-- Kein Retry-Knopf: Das Cockpit versucht es im nächsten Takt von selbst. -->
+    <app-error-state [error]="error" />
+  } @else {
+    <app-loading-state text="Tidedaten werden geladen ..." />
+  }
+</app-widget-frame>

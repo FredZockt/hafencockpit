@@ -1,0 +1,144 @@
+/* `flex: 1` statt `height: 100%`: Der Kachelkörper ist eine Flex-Spalte - nur so
+ * kann die Herkunftszeile per `margin-top: auto` nach unten rutschen. */
+.tide {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.tide__headline {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tide__value {
+  font-size: 2.1rem;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kein Messwert (null) - als Lücke erkennbar, nicht als "0". */
+.tide__value--missing {
+  color: var(--text-muted);
+}
+
+.tide__unit {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.tide__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tide__trend--steigend {
+  color: var(--accent);
+}
+
+.tide__trend--fallend {
+  color: var(--warn);
+}
+
+.tide__trend--gleichbleibend,
+.tide__trend--unbekannt {
+  color: var(--text-muted);
+}
+
+.tide__reference {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.tide__nhn {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.tide__gauge-zero {
+  opacity: 0.75;
+}
+
+.tide__badges {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.tide__badge {
+  padding: 0.12rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-head);
+  color: var(--text-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.tide__badge--hoch {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.tide__badge--niedrig {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.tide__badge--normal {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+/* 'veraltet': Die Quelle selbst hält den Wert für nicht mehr aktuell. */
+.tide__badge--veraltet {
+  border-color: var(--warn);
+  color: var(--warn);
+}
+
+.tide__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.tide__fact {
+  dt {
+    margin: 0;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+  }
+
+  dd {
+    margin: 0.1rem 0 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tide__origin {
+  margin: auto 0 0;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}

@@ -1,0 +1,82 @@
+<!-- Daten schlagen alles - siehe Tide-Widget. -->
+<app-widget-frame
+  [title]="definition.title"
+  [dataSource]="definition.dataSource"
+  [loadedAt]="loadedAt()"
+  [status]="status()"
+  [removable]="context !== null"
+  (remove)="context?.remove()"
+>
+  @if (data(); as traffic) {
+    @if (traffic.vessels.length === 0) {
+      <app-empty-state
+        icon="⚓"
+        text="Keine Schiffsbewegungen im Umkreis"
+        [hint]="emptyHint()"
+      />
+    } @else {
+      <p class="ships__summary">
+        <span class="ships__in">{{ traffic.inboundCount }} einlaufend</span>
+        &middot;
+        <span class="ships__out">{{ traffic.outboundCount }} auslaufend</span>
+      </p>
+
+      <ul class="ships">
+        @for (ship of traffic.vessels; track ship.id) {
+          <li class="ship" [class]="'ship--' + ship.direction">
+            <span class="ship__arrow" [title]="ship.direction">
+              {{ directionArrow(ship.direction) }}
+            </span>
+
+            <span class="ship__icon" aria-hidden="true">{{ typeIcon(ship.shipType) }}</span>
+
+            <span class="ship__body">
+              <span class="ship__name">{{ ship.name }}</span>
+              <span class="ship__meta">
+                {{ ship.shipType }} &middot; {{ ship.navStatus }}
+                @if (isPacketStale(ship.lastSeenAt, loadedAt())) {
+                  <!-- Sendet seit über 10 Minuten nichts mehr. Das Schiff "steht"
+                       nicht - wir wissen nur nichts Neues über es. -->
+                  <span class="ship__silent" title="Letztes AIS-Paket ist älter als 10 Minuten">
+                    kein Signal
+                  </span>
+                }
+              </span>
+            </span>
+
+            <span class="ship__numbers">
+              <span class="ship__distance">{{ ship.distanceKm | number: '1.1-1' }} km</span>
+              <span class="ship__speed">
+                @if (ship.speedKn !== null) {
+                  {{ ship.speedKn | number: '1.1-1' }} kn
+                } @else {
+                  <!-- AIS-Sentinel 102.3 wurde abgefangen - "–" statt 102 Knoten. -->
+                  – kn
+                }
+              </span>
+              <span class="ship__eta">
+                @if (ship.eta !== null) {
+                  ETA {{ ship.eta | date: 'dd.MM. HH:mm' }}
+                } @else {
+                  ETA unbekannt
+                }
+              </span>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+
+    <!-- Herkunft und Ehrlichkeit: Was wurde nicht angezeigt? -->
+    <p class="ships__origin">
+      Umkreis {{ traffic.radiusKm }} km &middot; {{ traffic.vessels.length }} angezeigt
+      @if (traffic.discardedCount > 0) {
+        &middot; {{ traffic.discardedCount }} ohne Position / außerhalb verworfen
+      }
+    </p>
+  } @else if (fatalError(); as error) {
+    <app-error-state [error]="error" />
+  } @else {
+    <app-loading-state text="Schiffsbewegungen werden geladen ..." />
+  }
+</app-widget-frame>

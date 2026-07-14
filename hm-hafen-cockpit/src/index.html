@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- lang="de" steuert Aussprache (Screenreader) und Silbentrennung. -->
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hafen-Cockpit Hamburg</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Konfigurierbares Dashboard für die Hafenleitstelle: Tide (PEGELONLINE), Wetter und amtliche DWD-Warnungen (Bright Sky)."
+    />
+
+    <!-- Spart beim ersten Abruf DNS-Lookup und TLS-Handshake. -->
+    <link rel="preconnect" href="https://www.pegelonline.wsv.de" />
+    <link rel="preconnect" href="https://api.brightsky.dev" />
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

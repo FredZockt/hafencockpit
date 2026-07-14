@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.ships__summary {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.ships__in {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.ships__out {
+  color: var(--warn);
+  font-weight: 600;
+}
+
+/* `flex: 1` + `min-height: 0` - dasselbe Paar wie bei den Warnungen: Nur so
+ * scrollt die Liste INNERHALB der Kachel, statt die feste Kachelhöhe zu sprengen. */
+.ships {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ship {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+
+  padding: 0.35rem 0.45rem;
+  border-radius: 6px;
+  border-left: 3px solid var(--border);
+  background: var(--surface-head);
+}
+
+.ship--einlaufend {
+  border-left-color: var(--accent);
+}
+
+.ship--auslaufend {
+  border-left-color: var(--warn);
+}
+
+.ship--liegt {
+  border-left-color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.ship__arrow {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ship--einlaufend .ship__arrow {
+  color: var(--accent);
+}
+
+.ship--auslaufend .ship__arrow {
+  color: var(--warn);
+}
+
+.ship__icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.ship__body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* erlaubt text-overflow im Kind */
+}
+
+.ship__name {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ship__meta {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.ship__silent {
+  margin-left: 0.25rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.ship__numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ship__distance {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ships__origin {
+  margin: 0.5rem 0 0;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
