@@ -1,0 +1,108 @@
+/* Siehe Tide-Widget: `flex: 1` statt `height: 100%` im Flex-Kachelkörper. */
+.weather {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.weather__headline {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.weather__emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.weather__temp {
+  font-size: 1.9rem;
+  font-weight: 650;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.weather__temp--missing {
+  color: var(--text-muted);
+}
+
+.weather__unit {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.weather__condition {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.weather__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.weather__fact {
+  dt {
+    margin: 0;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+  }
+
+  dd {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+
+    margin: 0.1rem 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.weather__beaufort {
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--surface-head);
+  border: 1px solid var(--border);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Der Pfeil wird per inline-transform gedreht (Winkel kommt aus den Daten). */
+.weather__arrow {
+  display: inline-block;
+  color: var(--accent);
+  transition: transform 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather__arrow {
+    transition: none;
+  }
+}
+
+.weather__degrees {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.weather__origin {
+  margin: auto 0 0;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}

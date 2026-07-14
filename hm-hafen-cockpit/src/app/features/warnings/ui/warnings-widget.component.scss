@@ -1,0 +1,125 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  /* `flex: 1` + `min-height: 0` ist das Paar, das Scrollen in einer Flex-Spalte erst
+   * ermöglicht - ohne min-height:0 wächst ein Flex-Kind über seinen Container hinaus,
+   * statt zu scrollen. */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.warning {
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  background: var(--surface-head);
+}
+
+/* Farbcodierung der Warnstufen. 'unbekannt' bleibt neutral: eine Warnung ohne Stufe darf
+ * weder harmlos noch extrem aussehen. */
+.warning--extrem {
+  border-left-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.warning--schwer {
+  border-left-color: var(--danger);
+}
+
+.warning--maessig {
+  border-left-color: var(--warn);
+}
+
+.warning--gering {
+  border-left-color: var(--accent);
+}
+
+.warning--unbekannt {
+  border-left-color: var(--text-muted);
+}
+
+.warning__head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.warning__severity {
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.warning__active {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--danger);
+  text-transform: uppercase;
+}
+
+.warning__upcoming {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.warning__headline {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.warning__period {
+  margin: 0.15rem 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.warning__open {
+  font-style: italic;
+}
+
+.warning__description {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.warning__instruction {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.warnings__origin {
+  margin: 0.6rem 0 0;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}

@@ -1,0 +1,105 @@
+<!--
+  WETTER-WIDGET - Template.
+  Struktur wie beim Tide-Widget: Daten schlagen alles (sichtbar auch beim
+  Nachladen und nach Fehlversuch -> kein Content-Jump). Erklärung siehe dort.
+-->
+<app-widget-frame
+  [title]="definition.title"
+  [dataSource]="definition.dataSource"
+  [loadedAt]="loadedAt()"
+  [status]="status()"
+  [removable]="context !== null"
+  (remove)="context?.remove()"
+>
+  @if (data(); as weather) {
+    <div class="weather">
+      <div class="weather__headline">
+        <span class="weather__emoji" aria-hidden="true">{{ emoji(weather.icon) }}</span>
+
+        <div>
+          @if (weather.temperatureCelsius !== null) {
+            <!-- Direkt aus der API in °C (units=dwd) - keine Umrechnung. -->
+            <span class="weather__temp">
+              {{ weather.temperatureCelsius | number: '1.0-1'
+              }}<span class="weather__unit">&nbsp;°C</span>
+            </span>
+          } @else {
+            <span class="weather__temp weather__temp--missing">–</span>
+          }
+          <p class="weather__condition">{{ weather.condition }}</p>
+        </div>
+      </div>
+
+      <dl class="weather__facts">
+        <div class="weather__fact">
+          <dt>Wind</dt>
+          <dd>
+            @if (weather.windSpeedKmh !== null) {
+              {{ weather.windSpeedKmh | number: '1.0-0' }} km/h
+              @if (weather.beaufort !== null) {
+                <span class="weather__beaufort">Bft {{ weather.beaufort }}</span>
+              }
+            } @else {
+              –
+            }
+          </dd>
+        </div>
+
+        <div class="weather__fact">
+          <dt>Böen</dt>
+          <dd>
+            @if (weather.windGustKmh !== null) {
+              {{ weather.windGustKmh | number: '1.0-0' }} km/h
+            } @else {
+              –
+            }
+          </dd>
+        </div>
+
+        <div class="weather__fact">
+          <dt>Richtung</dt>
+          <dd>
+            @if (weather.windDirection !== null) {
+              <!-- Der Pfeil zeigt, WOHIN der Wind weht; die Himmelsrichtung benennt,
+                   WOHER er kommt (meteorologische Konvention). -->
+              <span
+                class="weather__arrow"
+                [style.transform]="
+                  'rotate(' + windArrowRotation(weather.windDirectionDegrees) + 'deg)'
+                "
+                aria-hidden="true"
+                >↑</span
+              >
+              aus {{ weather.windDirection }}
+              <span class="weather__degrees">
+                ({{ weather.windDirectionDegrees | number: '1.0-0' }}°)
+              </span>
+            } @else {
+              –
+            }
+          </dd>
+        </div>
+      </dl>
+
+      <!-- Die Entfernung ist keine Deko: Die nächste DWD-Station liegt ~9 km
+           landeinwärts, der Wind wurde nicht an der Kaikante gemessen. -->
+      <p class="weather__origin">
+        @if (weather.source.stationName; as station) {
+          DWD-Station {{ station }}
+          @if (weather.source.distanceKm !== null) {
+            &middot; {{ weather.source.distanceKm | number: '1.0-1' }} km entfernt
+          }
+        } @else {
+          Quelle unbekannt
+        }
+        @if (weather.windAveragingMinutes !== null) {
+          &middot; Wind: {{ weather.windAveragingMinutes }}-Min-Mittel
+        }
+      </p>
+    </div>
+  } @else if (fatalError(); as error) {
+    <app-error-state [error]="error" />
+  } @else {
+    <app-loading-state text="Wetterdaten werden geladen ..." />
+  }
+</app-widget-frame>

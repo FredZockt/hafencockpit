@@ -1,0 +1,183 @@
+/* Alle Farben kommen aus den globalen Custom Properties (siehe styles.scss). */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.frame__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-head);
+}
+
+/* Ein echter <button>: per Tab erreichbar. Das CDK hängt sich an das Element, nicht an den Typ. */
+.frame__handle {
+  display: grid;
+  place-items: center;
+
+  padding: 0.2rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: grab;
+
+  svg {
+    fill: currentcolor;
+  }
+
+  &:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+/* Status-Marker: grün = live, orange = Aktualisierung läuft, rot = Fehler.
+ * Die Farbe ist NICHT die einzige Information - der Marker trägt Titel/aria-label, und beim
+ * Aktualisieren pulsiert zusätzlich ein Ring (auch ohne Farbwahrnehmung erkennbar). */
+.frame__status {
+  position: relative;
+  flex-shrink: 0;
+
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  background: var(--text-muted);
+  transition: background-color 0.25s ease;
+}
+
+/* Kein Blinken: Der Normalzustand darf keine Aufmerksamkeit ziehen. */
+.frame__status--live {
+  background: var(--ok);
+}
+
+.frame__status--refreshing {
+  background: var(--warn);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid var(--warn);
+    animation: status-ping 1.2s ease-out infinite;
+  }
+}
+
+/* Die Kachel zeigt weiterhin die letzten bekannten Daten ('stale') - der Marker macht klar,
+ * dass sie nicht live sind. */
+.frame__status--error {
+  background: var(--danger);
+}
+
+@keyframes status-ping {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frame__status--refreshing::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+.frame__titles {
+  flex: 1;
+  min-width: 0; /* erlaubt text-overflow im Kind */
+}
+
+.frame__title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frame__source {
+  margin: 0.1rem 0 0;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+.frame__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.frame__timestamp {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums; /* Ziffern springen beim Ticken nicht */
+}
+
+.frame__remove {
+  display: grid;
+  place-items: center;
+
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+}
+
+/* Flex-Spalte: Grundlage dafür, dass die Zustandskomponenten (Loading/Error/Empty) sich mit
+ * `flex: 1` den freien Platz nehmen - ohne `height: 100%`, das eine Elternhöhe voraussetzt,
+ * die eine reine Block-Box nicht garantiert. */
+.frame__body {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+  min-height: 0; /* damit Kinder mit overflow:auto wirklich scrollen können */
+  padding: 0.9rem;
+}

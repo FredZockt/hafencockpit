@@ -1,0 +1,48 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    /* Ziel: "kein any" ist nicht nur Absicht, sondern technisch erzwungen. */
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Optionale Properties bekommen nicht implizit `undefined` zugewiesen. Konsequenz:
+     * Optionale Felder deklarieren wir als `readonly foo?: string | undefined` (siehe
+     * AppError), damit ein explizit gesetztes `undefined` erlaubt bleibt. */
+    "exactOptionalPropertyTypes": true,
+
+    /* Index-Zugriffe liefern `T | undefined` - das zwingt die Kurven-Mapper, den Fall
+     * "leeres Array" zu behandeln, statt blind auf `points[0]` zu vertrauen. Bei
+     * `Record<WidgetType, ...>` mit endlichem Union-Key greift das Flag NICHT, der
+     * Registry-Zugriff bleibt also ohne Undefined-Check typsicher. */
+    "noUncheckedIndexedAccess": true,
+
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    /* Templates werden so scharf geprüft wie TS-Code: `tide().data.xyz` ist im @switch-Zweig
+     * nur erlaubt, wenn die Discriminated Union das hergibt. */
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
